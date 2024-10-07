@@ -1,6 +1,17 @@
 import { useState } from 'react';
-
 import './App.css'
+
+const indexMapPos = [
+  [0,0],
+  [0,1],
+  [0,3],
+  [1,0],
+  [1,1],
+  [1,2],
+  [2,0],
+  [2,1],
+  [2,2]
+];
 
 function Square({ value, onSquareClick, winner }) {
   return <button className={ "square " + (winner ? 'winner' : '')}
@@ -31,7 +42,7 @@ function Board({xIsNext, squares, onPlay}) {
     } else {
       nextSquares[index] = "O"
     }
-    onPlay(nextSquares)
+    onPlay(nextSquares, index)
   }
 
   return <>
@@ -60,13 +71,15 @@ function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)])
   const [currentMove, setCurrentMove] = useState(0)
   const [reverse, setReverse] = useState(false)
+  const [historyPosition, setHistoryPostition] = useState([])
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove]
 
-  function handlePlay(nextSquares){
+  function handlePlay(nextSquares, index){
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares]
     setHistory(nextHistory)
     setCurrentMove(nextHistory.length - 1);
+    setHistoryPostition([...historyPosition, index]);
   }
 
   function jumpTo(nextMove){
@@ -77,10 +90,10 @@ function Game() {
     setReverse(!reverse)
   }
 
-  const moves = history.map((squares, move) =>{
+  const moves = history.map((squares, move) => {
     let description;
     if(move) {
-      description = `Go to move # ${move}`
+      description = `Go to move # ${move} ${indexMapPos[historyPosition[move - 1]]}`
     } else {
       description = 'Go to game start'
     }
